@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Nav } from './nav';
-import { Sidebar } from './Sidebar';
+import { Sidebar } from './sidebar';
 // aksjfa
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 
