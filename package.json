@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "next start",
-    "lint": "next lint",
-    "vercel-build": "npm install --no-save lightningcss-linux-x64-gnu && next build"
+    "lint": "next lint"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.8.0",
@@ -91,20 +90,7 @@
     "tailwindcss": "^3.3.5",
     "typescript": "^5"
   },
-  "overrides": {
-    "lightningcss": {
-      "@napi-rs/tauri-build": {
-        "lightningcss-darwin-arm64": "emergent",
-        "lightningcss-darwin-x64": "emergent",
-        "lightningcss-linux-arm-gnueabihf": "emergent",
-        "lightningcss-linux-arm64-gnu": "emergent",
-        "lightningcss-linux-arm64-musl": "emergent",
-        "lightningcss-linux-x64-gnu": "*",
-        "lightningcss-linux-x64-musl": "emergent",
-        "lightningcss-win32-arm64-msvc": "emergent",
-        "lightningcss-win32-ia32-msvc": "emergent",
-        "lightningcss-win32-x64-msvc": "emergent"
-      }
-    }
+  "resolutions": {
+    "lightningcss": "1.22.0"
   }
 }
