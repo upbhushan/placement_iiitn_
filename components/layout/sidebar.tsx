@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
     LayoutDashboard,
     GraduationCap,
@@ -313,8 +314,19 @@ export function Sidebar({ className }: SidebarProps) {
                             "flex items-center",
                             collapsed ? "justify-center" : ""
                         )}>
-                            <GraduationCap className="h-6 w-6 text-primary flex-shrink-0" />
-                            {!collapsed && <span className="text-lg font-semibold ml-2">Campus System</span>}
+                            <div className="h-10 w-10 bg-white rounded-md flex items-center justify-center overflow-hidden">
+                                <Image 
+                                    src="/logo.png" 
+                                    alt="IIITN Logo" 
+                                    width={35} 
+                                    height={35} 
+                                    className="object-contain"
+                                    priority
+                                />
+                            </div>
+                            {!collapsed && (
+                                <span className="text-lg font-semibold ml-2">Placement Cell</span>
+                            )}
                         </Link>
                     </div>
 

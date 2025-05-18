@@ -4,16 +4,19 @@ import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Nav } from "@/components/layout/nav";
+// import { Nav } from "@/components/layout/nav";
 import SessionProvider from "@/components/session-provider";
 import FocusRingFix from "@/components/focus-ring-fix";
-import { AppLayout } from '@/components/layout/AppLayout';
+import {AppLayout} from '@/components/layout/AppLayout';
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Your App Title",
-  description: "Your app description",
+  title: "IIIT Nagpur Placement Cell",
+  description: "Training and Placement Cell of IIIT Nagpur",
+  icons: {
+    icon: "/logo.png", // This sets your favicon
+  }
 }
 
 export default function RootLayout({
