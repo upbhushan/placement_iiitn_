@@ -1,0 +1,24 @@
+/* Fix for input and textarea focus ring overflow */
+
+/* For inputs */
+input:focus-visible {
+  /* Ensure the input doesn't move or resize on focus */
+  transform: translateZ(0);
+  position: relative;
+  z-index: 1; /* Ensure proper stacking without covering too much */
+  /* Use box-shadow for a ring effect that doesn't affect layout */
+  box-shadow: 0 0 0 3px var(--ring, rgba(59, 130, 246, 0.4));
+  /* Remove the thick ring that causes layout issues */
+  outline: none;
+  border-color: var(--ring);
+}
+
+/* For textareas */
+textarea:focus-visible {
+  transform: translateZ(0);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 3px var(--ring, rgba(59, 130, 246, 0.4));
+  outline: none;
+  border-color: var(--ring);
+}
