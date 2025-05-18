@@ -45,8 +45,8 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
             // Assuming session.user.id is the student's MongoDB ObjectId
             // And your Student model has fields like 'name', 'email', 'rollNumber', 'cgpa', etc.
             studentDetails = await Student.findById(new Types.ObjectId(session.user.id))
-                .select('name email rollNumber branch phoneNumber cgpa activeBacklogs gender hometown dob education placement') // Select fields relevant for auto-fill
-                .lean();
+    .select('name email branch phoneNumber cgpa activeBacklogs gender hometown dob education placement')
+    .lean();
         }
 
         // Prepare the form with auto-filled data if applicable
