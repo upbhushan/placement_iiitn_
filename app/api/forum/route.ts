@@ -41,11 +41,12 @@ async function uploadToCloudinary(
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const limit = parseInt(searchParams.get("limit") || "10"); // Number of topics to fetch
-    const lastCreatedAt = searchParams.get("lastCreatedAt"); // Timestamp of the last loaded topic
+    const limit = parseInt(searchParams.get("limit") || "10"); 
+    const lastCreatedAt = searchParams.get("lastCreatedAt");
+    const company = searchParams.get("company"); // Add this line to get company filter
 
-    // Create a cache key based on the query parameters
-    const cacheKey = `topics:${limit}:${lastCreatedAt || "initial"}`;
+    // Include company in the cache key
+    const cacheKey = `topics:${limit}:${company || 'all'}:${lastCreatedAt || "initial"}`;
 
     try {
       // Try to get from Redis cache first
@@ -70,23 +71,37 @@ export async function GET(req: NextRequest) {
       await mongoose.connect(process.env.MONGODB_URI!);
     }
 
-    // Build query for lazy loading
+    // Build query for lazy loading and filtering
     const query: any = { isActive: true };
+    
+    // Add company filter if provided
+    if (company) {
+      query.company = { $regex: new RegExp(company, 'i') }; // Case insensitive match
+    }
+    
     if (lastCreatedAt) {
-      // Fetch topics created before the last timestamp
+      console.log("Filtering by lastCreatedAt:", new Date(lastCreatedAt));
       query.createdAt = { $lt: new Date(lastCreatedAt) };
     }
+
+    // Debug the query
+    console.log("MongoDB query:", JSON.stringify(query));
 
     // Fetch topics
     const topics = await Topic.find(query)
       .sort({ createdAt: -1 }) // Newest first
       .limit(limit);
 
+    // Make sure this logic is correct for determining if there are more items
+    const hasMore = topics.length >= limit;
+
+    // Include all necessary data in the response
     const responseData = {
       topics,
-      hasMore: topics.length === limit, // Indicate if there are more topics to load
-      lastCreatedAt:
-        topics.length > 0 ? topics[topics.length - 1].createdAt : null,
+      hasMore,
+      lastCreatedAt: topics.length > 0 ? topics[topics.length - 1].createdAt : null,
+      count: topics.length,
+      timestamp: new Date().toISOString() // Add this to help with debugging
     };
 
     // Cache the result for 2 minutes (120 seconds)

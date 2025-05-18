@@ -326,7 +326,45 @@ export default function TopicDetailPage({ id }: TopicDetailPageProps) {
         </CardHeader>
 
         <CardContent>
-          <p>{topic?.content}</p>
+          {/* Format the content properly with markdown styling */}
+          <div className="prose dark:prose-invert max-w-none">
+            {topic?.content && (
+              <div className="whitespace-pre-wrap">
+                {topic.content.split('\n\n').map((paragraph, idx) => {
+                  // Handle headers (lines starting with #)
+                  if (paragraph.startsWith('# ')) {
+                    return <h1 key={idx} className="text-2xl font-bold mt-4 mb-2">{paragraph.substring(2)}</h1>;
+                  } else if (paragraph.startsWith('## ')) {
+                    return <h2 key={idx} className="text-xl font-bold mt-4 mb-2">{paragraph.substring(3)}</h2>;
+                  } else if (paragraph.startsWith('### ')) {
+                    return <h3 key={idx} className="text-lg font-bold mt-3 mb-2">{paragraph.substring(4)}</h3>;
+                  }
+                  
+                  // Handle lists
+                  else if (paragraph.includes('\n- ')) {
+                    const listItems = paragraph.split('\n- ');
+                    const title = listItems.shift(); // First part might be a title
+                    
+                    return (
+                      <div key={idx}>
+                        {title && title.trim() !== '' && <p className="mb-2">{title}</p>}
+                        <ul className="list-disc pl-6 space-y-1 mb-4">
+                          {listItems.map((item, itemIdx) => (
+                            <li key={itemIdx}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  }
+                  
+                  // Regular paragraphs
+                  else {
+                    return <p key={idx} className="mb-4">{paragraph}</p>;
+                  }
+                })}
+              </div>
+            )}
+          </div>
 
           {/* Display images from the images array */}
           {topic?.images && topic.images.length > 0 && (

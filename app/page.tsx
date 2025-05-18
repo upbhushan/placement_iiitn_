@@ -1021,7 +1021,7 @@ export default function Home() {
                 </p>
                 <div className="flex space-x-4 mt-6">
                   <a
-                    href="https://www.linkedin.com/school/iiitn/"
+                    href="https://www.linkedin.com/school/indian-institute-of-information-technology-nagpur/posts/?feedView=all"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-9 h-9 bg-[#0066CC] dark:bg-[#00508F] rounded-full flex items-center justify-center transition-colors hover:bg-blue-700 dark:hover:bg-blue-800"
@@ -1037,7 +1037,7 @@ export default function Home() {
                     </svg>
                   </a>
                   <a
-                    href="https://twitter.com/iiitn_official"
+                    href="https://x.com/IIITN_OFFICIAL"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-9 h-9 bg-[#0066CC] dark:bg-[#00508F] rounded-full flex items-center justify-center transition-colors hover:bg-blue-700 dark:hover:bg-blue-800"
@@ -1053,7 +1053,7 @@ export default function Home() {
                     </svg>
                   </a>
                   <a
-                    href="https://www.facebook.com/iiitnagpur/"
+                    href="https://www.facebook.com/IIITNagpurOfficial/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-9 h-9 bg-[#0066CC] dark:bg-[#00508F] rounded-full flex items-center justify-center transition-colors hover:bg-blue-700 dark:hover:bg-blue-800"

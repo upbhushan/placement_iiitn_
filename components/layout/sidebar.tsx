@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import axios from 'axios';
 import {
     LayoutDashboard,
     GraduationCap,
@@ -62,7 +63,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ className }: SidebarProps) {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const pathname = usePathname();
     const router = useRouter();
     const [expanded, setExpanded] = useState(false); // Rename open to expanded for clarity
@@ -71,6 +72,7 @@ export function Sidebar({ className }: SidebarProps) {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const { student } = useStudentStore();
+    const setStudent = useStudentStore((state) => state.setStudent);
     const clearStudent = useStudentStore((state) => state.clearStudent);
 
     // Initialize sidebar state
@@ -91,6 +93,26 @@ export function Sidebar({ className }: SidebarProps) {
             setCollapsed(savedCollapsed === 'true');
         }
     }, [isDesktop]);
+
+    // Fetch student data when session is available
+    useEffect(() => {
+        const fetchStudentData = async () => {
+            // Only fetch if we have a logged-in user and student data isn't already loaded
+            if (status === 'authenticated' && session?.user && !student) {
+                try {
+                    // Make API call to get student profile data
+                    const response = await axios.get('/api/student/profile');
+                    
+                    // Store the student data in our user store
+                    setStudent(response.data);
+                } catch (error) {
+                    console.error('Error fetching student data:', error);
+                }
+            }
+        };
+
+        fetchStudentData();
+    }, [session, status, student, setStudent]);
 
     // Save state changes to localStorage
     useEffect(() => {

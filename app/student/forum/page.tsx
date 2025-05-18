@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { MessageSquare, Search, Plus, ThumbsUp } from "lucide-react";
 import axios from "axios";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -62,17 +63,18 @@ function ForumContent() {
   const [hasMore, setHasMore] = useState(true);
   const [searchInput, setSearchInput] = useState("");
   const [activeCompany, setActiveCompany] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Fetch topics with Axios
+  // Fix the fetchTopics function to correctly update lastCreatedAt
   const fetchTopics = useCallback(
     async (refresh = false) => {
       try {
         setLoading(true);
         const params = new URLSearchParams();
-        params.append("limit", "10");
+        params.append("limit", "25");
         if (lastCreatedAt && !refresh) {
           params.append("lastCreatedAt", lastCreatedAt);
         }
@@ -91,12 +93,19 @@ function ForumContent() {
         } else {
           setTopics((prev) => [...prev, ...data.topics]);
         }
-        setLastCreatedAt(data.lastCreatedAt);
+
+        // Fix 1: Get the last topic's createdAt for next pagination call
+        if (data.topics && data.topics.length > 0) {
+          const lastTopic = data.topics[data.topics.length - 1];
+          setLastCreatedAt(lastTopic.createdAt);
+          console.log("Next pagination point:", lastTopic.createdAt);
+        }
+
         setHasMore(data.hasMore);
         setError(null);
       } catch (err: any) {
         setError(err.message || "Failed to load topics");
-        console.error(err);
+        console.error("Topic loading error:", err);
       } finally {
         setLoading(false);
       }
@@ -143,6 +152,67 @@ function ForumContent() {
       setActiveCompany(companyName);
     }
     setLastCreatedAt(null); // Reset pagination when changing filter
+  };
+
+  // Replace your loadMoreTopics function with this improved version:
+  const loadMoreTopics = async () => {
+    if (loading || loadingMore) return;
+    
+    try {
+      setLoadingMore(true);
+      console.log("Loading more topics with lastCreatedAt:", lastCreatedAt);
+      
+      const params = new URLSearchParams();
+      params.append("limit", "10");
+      
+      if (lastCreatedAt) {
+        params.append("lastCreatedAt", lastCreatedAt);
+      }
+      
+      if (activeCompany) {
+        params.append("company", activeCompany);
+      }
+      
+      // Add search param if present
+      if (searchParams?.get("search")) {
+        params.append("search", searchParams.get("search") || "");
+      }
+      
+      const response = await axios.get("/api/forum", { params });
+      console.log("Pagination response:", response.data);
+      
+      // Force re-render with the new data
+      if (response.data.topics && response.data.topics.length > 0) {
+        // Important: Create a completely new array for React to detect changes
+        const newTopics = [...topics, ...response.data.topics];
+        console.log("Updated topics array length:", newTopics.length);
+        
+        // Set the topics first to ensure UI updates
+        setTopics(newTopics);
+        
+        // Then update pagination state
+        const lastTopic = response.data.topics[response.data.topics.length - 1];
+        if (lastTopic && lastTopic.createdAt) {
+          setLastCreatedAt(lastTopic.createdAt);
+          console.log("Next pagination point set to:", lastTopic.createdAt);
+        } else {
+          console.warn("Unable to find last topic's createdAt for pagination");
+        }
+        
+        setHasMore(!!response.data.hasMore);
+        
+        // Force scroll to trigger re-render if needed
+        window.scrollBy(0, 1);
+      } else {
+        // No more topics available
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error("Failed to load more topics:", error);
+      toast.error("Failed to load more topics. Please try again.");
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
   return (
@@ -319,7 +389,7 @@ function ForumContent() {
               </CardContent>
             </Card>
           ) : (
-            <div>
+            <div key={`topics-list-${new Date().getTime()}`}>
               {topics.length === 0 ? (
                 <Card>
                   <CardContent className="p-10 text-center">
@@ -429,32 +499,26 @@ function ForumContent() {
               )}
               {hasMore && (
                 <Button
-                  onClick={() => fetchTopics()}
-                  disabled={loading}
+                  onClick={loadMoreTopics}
+                  disabled={loading || loadingMore}
                   variant="outline"
-                  className="w-full mt-6 py-6 text-base font-medium relative overflow-hidden group"
+                  className="w-full mt-4 py-2"
                 >
-                  {loading ? (
-                    <div className="flex items-center">
-                      <div className="w-5 h-5 border-2 border-t-primary border-r-transparent border-b-primary border-l-transparent animate-spin mr-2"></div>
+                  {loadingMore ? (
+                    <div className="flex items-center justify-center">
+                      <div className="w-4 h-4 border-2 border-t-primary border-r-transparent border-b-primary border-l-transparent animate-spin mr-2"></div>
                       <span>Loading more discussions...</span>
                     </div>
                   ) : (
-                    <>
-                      <span>View More Discussions</span>
-                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-center"></span>
-                    </>
+                    "View More Discussions"
                   )}
                 </Button>
               )}
+
+              {/* Add this at the end of your list to show when all topics are loaded */}
               {!hasMore && topics.length > 0 && (
-                <div className="text-center bg-muted/30 rounded-lg py-6 mt-6 border border-dashed">
-                  <p className="text-muted-foreground">
-                    You've reached the end of the discussions.
-                  </p>
-                  <p className="text-sm text-muted-foreground/80 mt-1">
-                    Why not start a new topic?
-                  </p>
+                <div className="text-center text-muted-foreground mt-4 py-2">
+                  You've reached the end of the discussions
                 </div>
               )}
             </div>
