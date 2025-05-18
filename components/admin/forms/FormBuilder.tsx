@@ -255,6 +255,50 @@ export function FormBuilder() {
         setShowPreview(!showPreview);
     };
 
+    // Update the form preview section with better dark mode styles
+    const getPreviewStyles = (theme: string) => {
+        const themeData = COLOR_THEMES[theme as keyof typeof COLOR_THEMES] || COLOR_THEMES.default;
+
+        const isDarkTheme = themeData.darkMode;
+
+        // Base styles
+        const styles = {
+            card: {
+                backgroundColor: themeData.backgroundColor,
+                color: themeData.textColor,
+                boxShadow: isDarkTheme ? '0 4px 20px rgba(0, 0, 0, 0.5)' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+                transition: 'background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease'
+            },
+            heading: {
+                color: themeData.primaryColor,
+                textShadow: isDarkTheme ? '0 1px 2px rgba(0, 0, 0, 0.3)' : 'none'
+            },
+            description: {
+                color: `${themeData.textColor}cc`,
+            },
+            divider: {
+                borderColor: `${themeData.textColor}22`
+            },
+            input: {
+                backgroundColor: isDarkTheme ? `${themeData.backgroundColor}dd` : themeData.backgroundColor,
+                color: themeData.textColor,
+                borderColor: `${themeData.primaryColor}33`,
+                boxShadow: isDarkTheme ? 'inset 0 1px 2px rgba(0, 0, 0, 0.2)' : 'none'
+            },
+            button: {
+                backgroundColor: themeData.primaryColor,
+                color: isDarkTheme ? '#ffffff' : '#ffffff',
+                boxShadow: isDarkTheme ? '0 2px 8px rgba(0, 0, 0, 0.3)' : '0 2px 4px rgba(0, 0, 0, 0.1)'
+            },
+            label: {
+                color: themeData.textColor,
+                fontWeight: '500'
+            }
+        };
+
+        return styles;
+    };
+
     return (
         <div className="space-y-6">
             {/* Top bar with theme selector and form status */}
@@ -514,33 +558,30 @@ export function FormBuilder() {
                 {/* Right Panel: Form Preview */}
                 {showPreview && (
                     <div className="lg:col-span-1">
-                        <Card className="sticky top-4" style={{
-                            backgroundColor: COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.backgroundColor || COLOR_THEMES.default.backgroundColor,
-                            color: COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.textColor || COLOR_THEMES.default.textColor
-                        }}>
+                        <Card className="sticky top-4 overflow-hidden" style={getPreviewStyles(currentTheme).card}>
                             <CardHeader>
-                                <CardTitle className="text-lg" style={{ color: COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.textColor || COLOR_THEMES.default.textColor }}>
+                                <CardTitle className="text-lg" style={getPreviewStyles(currentTheme).heading}>
                                     Form Preview
                                 </CardTitle>
-                                <CardDescription style={{ color: `${COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.textColor || COLOR_THEMES.default.textColor}88` }}>
+                                <CardDescription style={getPreviewStyles(currentTheme).description}>
                                     This is how your form will appear to users
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="space-y-4">
-                                    <h2 className="text-xl font-bold" style={{ color: COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.textColor || COLOR_THEMES.default.textColor }}>
+                                    <h2 className="text-xl font-bold" style={getPreviewStyles(currentTheme).heading}>
                                         {formName || "Untitled Form"}
                                     </h2>
                                     {formDescription && (
-                                        <p className="text-sm" style={{ color: `${COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.textColor || COLOR_THEMES.default.textColor}88` }}>
+                                        <p className="text-sm" style={getPreviewStyles(currentTheme).description}>
                                             {formDescription}
                                         </p>
                                     )}
-                                    <div className="border-t pt-4" style={{ borderColor: `${COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.textColor || COLOR_THEMES.default.textColor}22` }}></div>
+                                    <div className="border-t pt-4" style={getPreviewStyles(currentTheme).divider}></div>
 
                                     {fields.map((field, idx) => (
                                         <div key={idx} className="space-y-2">
-                                            <label className="text-sm font-medium block">
+                                            <label className="text-sm font-medium block" style={getPreviewStyles(currentTheme).label}>
                                                 {field.label}
                                                 {field.required && <span className="text-red-500 ml-1">*</span>}
                                             </label>
@@ -549,11 +590,8 @@ export function FormBuilder() {
                                                 <input
                                                     type="text"
                                                     placeholder={field.placeholder}
-                                                    className="w-full px-3 py-2 border rounded-md"
-                                                    style={{
-                                                        borderColor: `${COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.primaryColor || COLOR_THEMES.default.primaryColor}22`,
-                                                        color: COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.textColor || COLOR_THEMES.default.textColor
-                                                    }}
+                                                    className="w-full px-3 py-2 border rounded-md transition-all duration-200"
+                                                    style={getPreviewStyles(currentTheme).input}
                                                     disabled
                                                 />
                                             )}
@@ -562,11 +600,8 @@ export function FormBuilder() {
                                                 <input
                                                     type="email"
                                                     placeholder={field.placeholder}
-                                                    className="w-full px-3 py-2 border rounded-md"
-                                                    style={{
-                                                        borderColor: `${COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.primaryColor || COLOR_THEMES.default.primaryColor}22`,
-                                                        color: COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.textColor || COLOR_THEMES.default.textColor
-                                                    }}
+                                                    className="w-full px-3 py-2 border rounded-md transition-all duration-200"
+                                                    style={getPreviewStyles(currentTheme).input}
                                                     disabled
                                                 />
                                             )}
@@ -575,11 +610,8 @@ export function FormBuilder() {
                                                 <input
                                                     type="number"
                                                     placeholder={field.placeholder}
-                                                    className="w-full px-3 py-2 border rounded-md"
-                                                    style={{
-                                                        borderColor: `${COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.primaryColor || COLOR_THEMES.default.primaryColor}22`,
-                                                        color: COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.textColor || COLOR_THEMES.default.textColor
-                                                    }}
+                                                    className="w-full px-3 py-2 border rounded-md transition-all duration-200"
+                                                    style={getPreviewStyles(currentTheme).input}
                                                     disabled
                                                 />
                                             )}
@@ -587,22 +619,16 @@ export function FormBuilder() {
                                             {field.fieldType === 'date' && (
                                                 <input
                                                     type="date"
-                                                    className="w-full px-3 py-2 border rounded-md"
-                                                    style={{
-                                                        borderColor: `${COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.primaryColor || COLOR_THEMES.default.primaryColor}22`,
-                                                        color: COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.textColor || COLOR_THEMES.default.textColor
-                                                    }}
+                                                    className="w-full px-3 py-2 border rounded-md transition-all duration-200"
+                                                    style={getPreviewStyles(currentTheme).input}
                                                     disabled
                                                 />
                                             )}
 
                                             {field.fieldType === 'select' && (
                                                 <select
-                                                    className="w-full px-3 py-2 border rounded-md"
-                                                    style={{
-                                                        borderColor: `${COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.primaryColor || COLOR_THEMES.default.primaryColor}22`,
-                                                        color: COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.textColor || COLOR_THEMES.default.textColor
-                                                    }}
+                                                    className="w-full px-3 py-2 border rounded-md transition-all duration-200"
+                                                    style={getPreviewStyles(currentTheme).input}
                                                     disabled
                                                 >
                                                     <option value="">{field.placeholder || "Select an option"}</option>
@@ -625,14 +651,8 @@ export function FormBuilder() {
                                     {fields.length > 0 && (
                                         <div className="pt-4">
                                             <button
-                                                style={{
-                                                    backgroundColor: COLOR_THEMES[currentTheme as keyof typeof COLOR_THEMES]?.primaryColor || COLOR_THEMES.default.primaryColor,
-                                                    color: '#fff',
-                                                    padding: '0.5rem 1rem',
-                                                    borderRadius: '0.375rem',
-                                                    fontWeight: '500'
-                                                }}
-                                                className="mt-2 disabled:opacity-50"
+                                                style={getPreviewStyles(currentTheme).button}
+                                                className="mt-2 disabled:opacity-50 px-4 py-2 rounded-md font-medium transition-all duration-200"
                                                 disabled
                                             >
                                                 Submit
