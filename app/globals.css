@@ -1,8 +1,15 @@
+/* Replace these problematic imports */
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
+/* With standard Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Keep your theme section */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
