@@ -4,10 +4,10 @@ import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
-// import { Nav } from "@/components/layout/nav";
 import SessionProvider from "@/components/session-provider";
 import FocusRingFix from "@/components/focus-ring-fix";
-import {AppLayout} from '@/components/layout/AppLayout';
+import { AppLayout } from '@/components/layout/AppLayout';
+import { Chatbot } from '@/components/chatbot/Chatbot';
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -43,6 +43,7 @@ export default function RootLayout({
             <AppLayout>
               {children}
             </AppLayout>
+            <Chatbot />
             <Toaster />
           </SessionProvider>
         </ThemeProvider>
