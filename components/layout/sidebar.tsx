@@ -232,7 +232,7 @@ export function Sidebar({ className }: SidebarProps) {
                 },
                 {
                     title: 'Forms',
-                    href: '/student/forms',
+                    href: '/student/dashboard',
                     icon: <FileText className="h-5 w-5" />
                 }
             ]

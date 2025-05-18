@@ -202,32 +202,32 @@ export default function AnalyticsPage() {
 
             {/* Overview Metrics */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <MetricCard
-                    title="Total Students"
-                    value={analyticsData?.totalStudents.toString() || '0'}
-                    description="Registered in the system"
-                    trend="neutral"
-                />
-                <MetricCard
-                    title="Students Placed"
-                    value={analyticsData?.placedStudents.toString() || '0'}
-                    description={`${analyticsData?.placedStudents && analyticsData?.totalStudents
-                        ? Math.round((analyticsData.placedStudents / analyticsData.totalStudents) * 100)
-                        : 0}% placement rate`}
-                    trend="up"
-                />
-                <MetricCard
-                    title="Average CGPA"
-                    value={analyticsData?.averageCGPA.toFixed(2) || '0'}
-                    description="Across all students"
-                    trend="neutral"
-                />
-                <MetricCard
-                    title="Average Package"
-                    value={`₹${analyticsData?.averagePackage.toFixed(2) || '0'} LPA`}
-                    description="For placed students"
-                    trend="up"
-                />
+              <MetricCard
+                title="Total Students"
+                value={analyticsData?.totalStudents.toString() || '0'}
+                description="Registered in the system"
+                trend="neutral"
+              />
+              <MetricCard
+                title="Students Placed"
+                value={analyticsData?.placedStudents.toString() || '0'}
+                description={`${analyticsData?.placedStudents && analyticsData?.totalStudents
+                  ? Math.round((analyticsData.placedStudents / analyticsData.totalStudents) * 100)
+                  : 0}% placement rate`}
+                trend="up"
+              />
+              <MetricCard
+                title="Average CGPA"
+                value={analyticsData?.averageCGPA.toFixed(2) || '0'}
+                description="Across all students"
+                trend="neutral"
+              />
+              <MetricCard
+                title="Average Package"
+                value={`₹${((analyticsData?.averagePackage ?? 0) / 1_00_000).toFixed(2)} LPA`}
+                description="For placed students"
+                trend="up"
+              />
             </div>
 
             {/* Charts Section */}
@@ -235,6 +235,7 @@ export default function AnalyticsPage() {
                 <TabsList className="mb-4">
                     <TabsTrigger value="distribution">Distribution</TabsTrigger>
                     <TabsTrigger value="placement">Placement</TabsTrigger>
+                    <TabsTrigger value="analysis">Deep Analysis</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="distribution" className="space-y-8">
@@ -254,16 +255,45 @@ export default function AnalyticsPage() {
                                             cy="50%"
                                             labelLine={false}
                                             outerRadius={80}
+                                            innerRadius={40}  // Adding inner radius for donut chart
                                             fill="#8884d8"
                                             dataKey="value"
-                                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                            paddingAngle={2}  // Add spacing between segments
+                                            label={({ name, value, percent }) => 
+                                                `${name}: ${value} (${(percent * 100).toFixed(0)}%)`
+                                            }
                                         >
-                                            {analyticsData?.branchDistribution.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            {analyticsData?.branchDistribution?.map((entry, index) => (
+                                                <Cell 
+                                                    key={`cell-${index}`} 
+                                                    fill={COLORS[index % COLORS.length]}
+                                                    stroke="#ffffff"
+                                                    strokeWidth={1}
+                                                />
                                             ))}
                                         </Pie>
-                                        <Tooltip />
-                                        <Legend />
+                                        <Tooltip 
+                                            content={({ active, payload }) => {
+                                                if (active && payload && payload.length) {
+                                                    const data = payload[0].payload;
+                                                    return (
+                                                        <div className="bg-white p-4 rounded-md shadow-lg border border-gray-200">
+                                                            <p className="font-semibold">{data.name}</p>
+                                                            <p className="text-sm text-gray-600">
+                                                                Students: <span className="font-medium">{data.value}</span>
+                                                            </p>
+                                                            <p className="text-sm text-gray-600">
+                                                                Percentage: <span className="font-medium">
+                                                                    {((data.value / (analyticsData?.totalStudents ?? 1)) * 100).toFixed(1)}%
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                }
+                                                return null;
+                                            }}
+                                        />
+                                        <Legend layout="horizontal" verticalAlign="bottom" align="center" />
                                     </PieChart>
                                 </ResponsiveContainer>
                             </CardContent>
@@ -277,13 +307,28 @@ export default function AnalyticsPage() {
                             </CardHeader>
                             <CardContent className="h-80">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={analyticsData?.cgpaDistribution}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" />
-                                        <YAxis />
-                                        <Tooltip />
+                                    <BarChart data={analyticsData?.cgpaDistribution} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
+                                        <defs>
+                                            <linearGradient id="cgpaGradient" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                                                <stop offset="95%" stopColor="#8884d8" stopOpacity={0.3}/>
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                                        <YAxis axisLine={false} tickLine={false} />
+                                        <Tooltip 
+                                            formatter={(value) => [`${value} students`]}
+                                            contentStyle={{ borderRadius: '8px' }}
+                                            cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+                                        />
                                         <Legend />
-                                        <Bar dataKey="value" name="Students" fill="#8884d8" />
+                                        <Bar 
+                                            dataKey="value" 
+                                            name="Students" 
+                                            fill="url(#cgpaGradient)"
+                                            radius={[4, 4, 0, 0]}  // Rounded corners on top
+                                        />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </CardContent>
@@ -306,17 +351,29 @@ export default function AnalyticsPage() {
                                             data={analyticsData?.placementDistribution}
                                             cx="50%"
                                             cy="50%"
-                                            labelLine={false}
+                                            labelLine={true}
                                             outerRadius={80}
+                                            innerRadius={40}  // Adding inner radius for donut chart
                                             fill="#8884d8"
                                             dataKey="value"
-                                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                            paddingAngle={4}  // Add spacing between segments
+                                            label={({ name, value, percent }) => 
+                                                `${name}: ${value} (${(percent * 100).toFixed(0)}%)`
+                                            }
                                         >
-                                            <Cell fill="#4ade80" />
-                                            <Cell fill="#f87171" />
+                                            <Cell fill="#4ade80" stroke="#ffffff" strokeWidth={2} />
+                                            <Cell fill="#f87171" stroke="#ffffff" strokeWidth={2} />
                                         </Pie>
-                                        <Tooltip />
-                                        <Legend />
+                                        <Tooltip 
+                                            formatter={(value, name) => [`${value} students`, `${name}`]}
+                                            contentStyle={{ borderRadius: '8px' }}
+                                        />
+                                        <Legend 
+                                            layout="horizontal" 
+                                            verticalAlign="bottom" 
+                                            align="center"
+                                            formatter={(value) => <span style={{ color: value === 'Placed' ? '#4ade80' : '#f87171' }}>{value}</span>}
+                                        />
                                     </PieChart>
                                 </ResponsiveContainer>
                             </CardContent>
@@ -330,14 +387,113 @@ export default function AnalyticsPage() {
                             </CardHeader>
                             <CardContent className="h-80">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={analyticsData?.packageDistribution}>
+                                    <BarChart data={analyticsData?.packageDistribution} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
+                                        <defs>
+                                            <linearGradient id="packageGradient" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#4ade80" stopOpacity={0.8}/>
+                                                <stop offset="95%" stopColor="#4ade80" stopOpacity={0.3}/>
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                                        <YAxis axisLine={false} tickLine={false} />
+                                        <Tooltip 
+                                            formatter={(value) => [`${value} students`]}
+                                            contentStyle={{ borderRadius: '8px' }}
+                                            cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+                                        />
+                                        <Legend />
+                                        <Bar 
+                                            dataKey="value" 
+                                            name="Students" 
+                                            fill="url(#packageGradient)"
+                                            radius={[4, 4, 0, 0]}  // Rounded corners on top
+                                        />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="analysis" className="space-y-8">
+                    <div className="grid grid-cols-1 gap-8">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Placement Success vs CGPA</CardTitle>
+                                <CardDescription>Analysis of placement success across CGPA ranges</CardDescription>
+                            </CardHeader>
+                            <CardContent className="h-80">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart
+                                        data={[
+                                            ...analyticsData?.cgpaDistribution?.map((item) => {
+                                                const range = item.name;
+                                                const totalInRange = item.value;
+                                                
+                                                // Calculate placed students in this CGPA range
+                                                let placedInRange = 0;
+                                                let avgPackage = 0;
+                                                
+                                                // You would need to calculate this from your student data
+                                                // This is just a placeholder for the concept
+                                                const placedStudentsInRange = students.filter(s => {
+                                                    const cgpa = s.cgpa;
+                                                    if (range === 'Below 6' && cgpa < 6 && s.placement.placed) return true;
+                                                    if (range === '6-7' && cgpa >= 6 && cgpa < 7 && s.placement.placed) return true;
+                                                    if (range === '7-8' && cgpa >= 7 && cgpa < 8 && s.placement.placed) return true;
+                                                    if (range === '8-9' && cgpa >= 8 && cgpa < 9 && s.placement.placed) return true;
+                                                    if (range === '9-10' && cgpa >= 9 && cgpa <= 10 && s.placement.placed) return true;
+                                                    return false;
+                                                });
+                                                
+                                                placedInRange = placedStudentsInRange.length;
+                                                
+                                                // Calculate average package for this range
+                                                if (placedInRange > 0) {
+                                                    avgPackage = placedStudentsInRange.reduce((sum, s) => 
+                                                        sum + (s.placement.package || 0), 0) / placedInRange;
+                                                }
+                                                
+                                                // Calculate placement rate
+                                                const placementRate = totalInRange > 0 
+                                                    ? (placedInRange / totalInRange) * 100 
+                                                    : 0;
+                                                
+                                                return {
+                                                    name: range,
+                                                    placementRate: placementRate.toFixed(1),
+                                                    avgPackage: avgPackage.toFixed(1),
+                                                    students: totalInRange
+                                                };
+                                            }) || []
+                                        ]}
+                                        margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+                                    >
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis dataKey="name" />
-                                        <YAxis />
-                                        <Tooltip />
+                                        <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
+                                        <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+                                        <Tooltip contentStyle={{ borderRadius: '8px' }} />
                                         <Legend />
-                                        <Bar dataKey="value" name="Students" fill="#4ade80" />
-                                    </BarChart>
+                                        <Line 
+                                            yAxisId="left"
+                                            type="monotone" 
+                                            dataKey="placementRate" 
+                                            name="Placement Rate (%)" 
+                                            stroke="#8884d8" 
+                                            activeDot={{ r: 8 }}
+                                            strokeWidth={2}
+                                        />
+                                        <Line 
+                                            yAxisId="right"
+                                            type="monotone" 
+                                            dataKey="avgPackage" 
+                                            name="Avg. Package (LPA)" 
+                                            stroke="#82ca9d"
+                                            strokeWidth={2} 
+                                        />
+                                    </LineChart>
                                 </ResponsiveContainer>
                             </CardContent>
                         </Card>
