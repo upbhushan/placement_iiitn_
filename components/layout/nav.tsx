@@ -67,16 +67,19 @@ export function Nav() {
     >
       <div className="px-6 py-3 flex justify-between items-center">
         <div className="flex items-center space-x-3">
-          {/* Removed the rounded-full class and increased the size for better visibility */}
-          <div className="h-10 w-10 bg-white rounded-lg flex items-center justify-center p-1">
-            <Image 
-              src="/logo.png" 
-              alt="IIITN Logo" 
-              width={60} 
-              height={54} 
-              className="object-contain" 
-              priority
-            />
+          {/* Added onClick to redirect to the homepage */}
+          <div
+        className="h-10 w-10 bg-white rounded-lg flex items-center justify-center p-1 cursor-pointer"
+        onClick={() => router.push("/")}
+          >
+        <Image 
+          src="/logo.png" 
+          alt="IIITN Logo" 
+          width={60} 
+          height={54} 
+          className="object-contain" 
+          priority
+        />
           </div>
           <h1 className="text-xl font-semibold">Placement Cell, IIIT Nagpur</h1>
         </div>
@@ -110,16 +113,12 @@ export function Nav() {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="#contact"
+                    <Link
+                    href="/contact"
                     className="hover:opacity-80 text-sm font-medium"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                  >
+                    >
                     Contact Us
-                  </Link>
+                    </Link>
                 </li>
               </ul>
             </nav>

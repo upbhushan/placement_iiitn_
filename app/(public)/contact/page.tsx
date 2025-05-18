@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -13,142 +15,217 @@ export default function ContactPage() {
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setName("");
-    setEmail("");
-    setMessage("");
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, message }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send message");
+      }
+      
+      setIsSubmitted(true);
+      setName("");
+      setEmail("");
+      setMessage("");
+      toast.success("Your message has been sent successfully!");
+      
+    } catch (err) {
+      console.error("Error sending message:", err);
+      setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      toast.error("Failed to send message. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
-    <div className="container py-10 max-w-4xl">
-      <h1 className="text-4xl font-bold mb-6">Contact Us</h1>
-      
-      <div className="grid md:grid-cols-2 gap-10">
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Get in Touch</h2>
-          <p className="mb-6">
-            Have questions about our campus management system? We're here to help.
-            Fill out the form and our team will get back to you as soon as possible.
+    <div className="py-16 bg-gradient-to-b from-background to-background/80">
+      <div className="container max-w-5xl px-4 sm:px-6">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold tracking-tight mb-3">Get in Touch</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Have questions about IIIT Nagpur's placement process? We're here to help you navigate your career journey.
           </p>
-          
-          <div className="space-y-4 mt-8">
-            <div className="flex items-center space-x-3">
-              <div className="bg-primary/10 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-primary">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                </svg>
-              </div>
-              <span>support@campus-system.com</span>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <div className="bg-primary/10 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-primary">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                </svg>
-              </div>
-              <span>+91 12345 67890</span>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <div className="bg-primary/10 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-primary">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                </svg>
-              </div>
-              <span>123 Campus Street, Education City, India</span>
-            </div>
-          </div>
         </div>
         
-        <Card>
-          {isSubmitted ? (
-            <CardContent className="pt-6">
-              <div className="text-center space-y-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mx-auto">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-primary">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+        <div className="grid lg:grid-cols-5 gap-10 items-start">
+          {/* Contact Information */}
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-card rounded-xl p-6 border shadow-sm">
+              <h2 className="font-semibold text-xl mb-6">Contact Information</h2>
+              
+              <div className="space-y-5">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 h-10 w-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                    <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Email</p>
+                    <p className="font-medium">placements@iiitn.ac.in</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold">Message Sent!</h3>
-                <p className="text-muted-foreground">
-                  Thank you for contacting us. We'll get back to you as soon as possible.
-                </p>
-                <Button 
-                  variant="outline"
-                  onClick={() => setIsSubmitted(false)}
-                  className="mt-4"
-                >
-                  Send Another Message
-                </Button>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 h-10 w-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                    <Phone className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Phone</p>
+                    <p className="font-medium">+91 712 2985010</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 h-10 w-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                    <MapPin className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Address</p>
+                    <p className="font-medium">Survey No. 140,141/1 behind Br. Sheshrao Wankhade Shetkari Soot Girni, Village - Waranga, PO - Dongargaon (Butibori), Tahsil - Nagpur (Rural), District - Nagpur, Maharashtra - 441108</p>
+                  </div>
+                </div>
               </div>
-            </CardContent>
-          ) : (
-            <form onSubmit={handleSubmit}>
-              <CardHeader>
-                <CardTitle>Send us a message</CardTitle>
-                <CardDescription>
-                  Fill out the form below and we'll respond as soon as possible.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input 
-                    id="name" 
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Your name" 
-                    required 
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Your email address" 
-                    required 
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea 
-                    id="message" 
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="How can we help you?" 
-                    rows={4} 
-                    required 
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Sending..." : "Send Message"}
-                </Button>
-              </CardFooter>
-            </form>
-          )}
-        </Card>
+              
+              <div className="mt-8 pt-6 border-t">
+                <h3 className="font-medium mb-3">Office Hours</h3>
+                <p className="text-muted-foreground">Monday - Friday: 9:00 AM - 5:00 PM</p>
+                <p className="text-muted-foreground">Saturday - Sunday: Closed</p>
+              </div>
+            </div>
+            
+            {/* Map or additional information */}
+            <div className="bg-card rounded-xl overflow-hidden border shadow-sm">
+              <div className="aspect-video w-full">
+                <iframe 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3722.7727599554095!2d79.0285!3d21.0915!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd4c0529518230f%3A0x45b76be0621cbb88!2sIIIT%20Nagpur!5e0!3m2!1sen!2sin!4v1652530956167!5m2!1sen!2sin" 
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0 }} 
+                  allowFullScreen 
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="grayscale"
+                ></iframe>
+              </div>
+            </div>
+          </div>
+          
+          {/* Contact Form */}
+          <div className="lg:col-span-3">
+            <Card className="border shadow-md">
+              {isSubmitted ? (
+                <CardContent className="pt-10 pb-10">
+                  <div className="text-center space-y-6 max-w-md mx-auto">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20 mx-auto">
+                      <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400" />
+                    </div>
+                    <h3 className="text-2xl font-semibold">Message Sent!</h3>
+                    <p className="text-muted-foreground">
+                      Thank you for contacting the IIIT Nagpur Placement Cell. We'll get back to you as soon as possible.
+                    </p>
+                    <Button 
+                      onClick={() => setIsSubmitted(false)}
+                      className="mt-4"
+                    >
+                      Send Another Message
+                    </Button>
+                  </div>
+                </CardContent>
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-2xl">Send us a message</CardTitle>
+                    <CardDescription>
+                      Please fill out the form below and a member of our team will get back to you shortly.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-5">
+                    {error && (
+                      <div className="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 p-4 rounded-lg flex items-start gap-3">
+                        <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                        <p>{error}</p>
+                      </div>
+                    )}
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="font-medium">Name</Label>
+                      <Input 
+                        id="name" 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Your full name" 
+                        className="h-12"
+                        required 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="font-medium">Email</Label>
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Your email address" 
+                        className="h-12"
+                        required 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="message" className="font-medium">Message</Label>
+                      <Textarea 
+                        id="message" 
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="How can we help you with your placement journey?" 
+                        rows={5} 
+                        className="resize-none"
+                        required 
+                      />
+                    </div>
+                  </CardContent>
+                  <CardFooter className="pt-2">
+                    <Button 
+                      type="submit" 
+                      className="w-full h-12 text-base bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-200"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <span className="flex items-center gap-2">
+                          <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Sending...
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <Send className="h-4 w-4" />
+                          Send Message
+                        </span>
+                      )}
+                    </Button>
+                  </CardFooter>
+                </form>
+              )}
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
