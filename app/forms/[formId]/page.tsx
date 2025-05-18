@@ -246,23 +246,56 @@ export default function StudentFillFormPage() {
         return <div className="flex justify-center items-center min-h-screen">Form not found.</div>;
     }
 
-    // Apply dynamic styles
-    const formStyles = {
-        backgroundColor: formDefinition.colorScheme.backgroundColor || '#ffffff',
-        color: formDefinition.colorScheme.textColor || '#333333',
-    };
-    const primaryColorStyle = {
-        backgroundColor: formDefinition.colorScheme.primaryColor || '#007bff',
-        color: formDefinition.colorScheme.backgroundColor || '#ffffff', // Assuming primary buttons have contrasting text
-    };
-    const inputBorderStyle = { // Example: Use primary color for focus ring or border
-        '--primary-color': formDefinition.colorScheme.primaryColor || '#007bff',
-    } as React.CSSProperties;
+    // Update your form styles to be more dark-mode friendly
+    const getFormStyles = (colorScheme: any) => {
+        const isDarkTheme = colorScheme.backgroundColor.toLowerCase().match(/(#1|#0|#2|rgb\(\s*([01]?\d|2[0-4]\d|25[0-5])\s*,\s*([01]?\d|2[0-4]\d|25[0-5])\s*,\s*([01]?\d|2[0-4]\d|25[0-5])\s*\))/);
 
+        return {
+            container: {
+                backgroundColor: colorScheme.backgroundColor || '#ffffff',
+                color: colorScheme.textColor || '#333333',
+                minHeight: '100vh',
+                transition: 'background-color 0.3s ease, color 0.3s ease'
+            },
+            card: {
+                boxShadow: isDarkTheme
+                    ? '0 4px 30px rgba(0, 0, 0, 0.5)'
+                    : '0 4px 20px rgba(0, 0, 0, 0.1)',
+                backgroundColor: isDarkTheme
+                    ? colorScheme.backgroundColor
+                    : '#ffffff',
+                borderColor: isDarkTheme ? '#333' : '#e2e8f0',
+                transition: 'all 0.3s ease'
+            },
+            heading: {
+                color: colorScheme.primaryColor
+            },
+            primaryColor: colorScheme.primaryColor || '#007bff',
+            button: {
+                backgroundColor: colorScheme.primaryColor || '#007bff',
+                color: isDarkTheme ? '#ffffff' : '#ffffff'
+            },
+            inputStyle: {
+                backgroundColor: isDarkTheme ? `${colorScheme.backgroundColor}dd` : colorScheme.backgroundColor,
+                color: colorScheme.textColor,
+                borderColor: `${colorScheme.primaryColor}33`,
+                boxShadow: isDarkTheme ? 'inset 0 1px 2px rgba(0, 0, 0, 0.2)' : 'none',
+                transition: 'all 0.2s ease'
+            }
+        };
+    };
+
+    const formStyles = getFormStyles(formDefinition.colorScheme);
 
     return (
-        <div style={formStyles} className="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+        <div style={formStyles.container} className="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
             <style jsx global>{`
+        :root {
+          --primary-color: ${formDefinition.colorScheme.primaryColor || '#007bff'};
+        }
+        .custom-primary-border {
+          border-color: var(--primary-color);
+        }
         .form-input:focus {
           border-color: var(--primary-color) !important;
           box-shadow: 0 0 0 2px var(--primary-color) !important;
@@ -272,8 +305,8 @@ export default function StudentFillFormPage() {
             box-shadow: 0 0 0 2px var(--primary-color) !important;
         }
       `}</style>
-            <Card className="w-full max-w-2xl shadow-xl" style={inputBorderStyle}>
-                <CardHeader className="text-center">
+            <Card className="w-full max-w-2xl shadow-xl custom-primary-border" style={formStyles.card}>
+                <CardHeader>
                     <CardTitle className="text-3xl font-extrabold" style={{ color: formDefinition.colorScheme.primaryColor }}>
                         {formDefinition.name}
                     </CardTitle>
@@ -360,7 +393,7 @@ export default function StudentFillFormPage() {
                                 )}
                             </div>
                         ))}
-                        <Button type="submit" className="w-full text-lg py-3" style={primaryColorStyle} disabled={isSubmitting || (sessionStatus === 'authenticated' && session?.user?.role !== 'student')}>
+                        <Button type="submit" className="w-full text-lg py-3" style={formStyles.button} disabled={isSubmitting || (sessionStatus === 'authenticated' && session?.user?.role !== 'student')}>
                             {isSubmitting ? 'Submitting...' : 'Submit Response'}
                         </Button>
                         {sessionStatus === 'authenticated' && session?.user?.role !== 'student' && (
