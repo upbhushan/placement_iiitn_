@@ -23,7 +23,7 @@ interface FormBuilderState {
         textColor: string;
     };
     published: boolean;
-    // sharedWith: string[]; // Array of student IDs as strings
+    currentTheme: string; // Theme key like 'default', 'dark', etc.
 
     // Actions
     setFormDetails: (details: { name: string; description: string }) => void;
@@ -33,7 +33,7 @@ interface FormBuilderState {
     moveField: (dragIndex: number, hoverIndex: number) => void;
     setColorScheme: (scheme: FormBuilderState['colorScheme']) => void;
     setPublishedStatus: (published: boolean) => void;
-    // setSharedWith: (studentIds: string[]) => void;
+    setTheme: (themeKey: string) => void;
     resetFormBuilder: (initialState?: Partial<FormBuilderState>) => void;
     loadFormForEditing: (formData: {
         _id: string;
@@ -62,13 +62,14 @@ const initialFields: ClientFormField[] = [
     },
 ];
 
-const initialState: Omit<FormBuilderState, 'setFormDetails' | 'addField' | 'removeField' | 'updateField' | 'moveField' | 'setColorScheme' | 'setPublishedStatus' | 'resetFormBuilder' | 'loadFormForEditing'> = {
+const initialState: Omit<FormBuilderState, 'setFormDetails' | 'addField' | 'removeField' | 'updateField' | 'moveField' | 'setColorScheme' | 'setPublishedStatus' | 'setTheme' | 'resetFormBuilder' | 'loadFormForEditing'> = {
     formId: null,
     formName: 'Untitled Form',
     formDescription: '',
     fields: initialFields,
     colorScheme: { ...initialColorScheme },
     published: false,
+    currentTheme: 'default',
     // sharedWith: [],
 };
 
@@ -81,7 +82,7 @@ export const useFormBuilderStore = create<FormBuilderState>()(
 
             addField: (fieldType) => {
                 const newField: ClientFormField = {
-                    _id: new Types.ObjectId().toString(), // Unique client-side ID
+                    _id: new Types.ObjectId().toString(), // Using MongoDB ObjectId
                     label: `New ${fieldType.charAt(0).toUpperCase() + fieldType.slice(1)} Field`,
                     fieldType: fieldType,
                     placeholder: '',
@@ -117,7 +118,21 @@ export const useFormBuilderStore = create<FormBuilderState>()(
 
             setColorScheme: (scheme) => set({ colorScheme: scheme }),
             setPublishedStatus: (published) => set({ published }),
-            // setSharedWith: (studentIds) => set({ sharedWith: studentIds }),
+            setTheme: (themeKey) => {
+                const { COLOR_THEMES } = require('@/components/admin/forms/ThemeSelector');
+                const theme = COLOR_THEMES[themeKey];
+
+                if (theme) {
+                    set({
+                        currentTheme: themeKey,
+                        colorScheme: {
+                            primaryColor: theme.primaryColor,
+                            backgroundColor: theme.backgroundColor,
+                            textColor: theme.textColor,
+                        }
+                    });
+                }
+            },
 
             resetFormBuilder: (newInitialState) => set({ ...initialState, ...newInitialState, formId: newInitialState?.formId || null, fields: newInitialState?.fields || initialFields.map(f => ({ ...f, _id: new Types.ObjectId().toString() })) }),
 

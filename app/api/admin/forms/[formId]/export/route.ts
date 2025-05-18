@@ -46,23 +46,43 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ message: 'No responses found for this form to export.' }, { status: 200 });
     }
 
+    // Create a set of valid fieldIds from the form template for strict filtering
+    const validFieldIds = new Set(formTemplate.fields.map(field => field._id.toString()));
+
     // Create a map of fieldIds to their labels for reference
     const fieldLabelMap = new Map();
     formTemplate.fields.forEach(field => {
       fieldLabelMap.set(field._id.toString(), field.label);
     });
 
-    // Define headers based on form fields
+    // Define headers based on form fields (add student info columns first)
+const headers = ['Student Name', 'Email', 'Branch', 'Submission Date']; // Removed Roll Number
     const formFieldHeaders = formTemplate.fields.map(field => field.label);
+    headers.push(...formFieldHeaders);
 
-    // Create rows for Excel
+    // Create rows for Excel with strict filtering to only include form fields
     const excelData = responses.map(response => {
-      const row: { [key: string]: any } = {};
+  const row: { [key: string]: any } = {
+    'Student Name': response.studentId?.name || 'N/A',
+    'Email': response.studentId?.email || 'N/A',
+    'Branch': response.studentId?.branch || 'N/A',
+    'Submission Date': new Date(response.submittedAt).toLocaleString()
+  };
 
-      // Add form field responses
+      // Initialize all form fields with empty values
+      formTemplate.fields.forEach(field => {
+        row[field.label] = '';
+      });
+
+      // Only add responses for fields that exist in the form template
       response.responses.forEach((fieldResp: any) => {
-        const fieldLabel = fieldLabelMap.get(fieldResp.fieldId.toString());
-        if (!fieldLabel) return; // Skip if field not found in template
+        const fieldId = fieldResp.fieldId.toString();
+
+        // Skip if this field is not in the form template
+        if (!validFieldIds.has(fieldId)) return;
+
+        const fieldLabel = fieldLabelMap.get(fieldId);
+        if (!fieldLabel) return; // Extra safety check
 
         // Format the value based on type
         if (Array.isArray(fieldResp.value)) {
@@ -79,11 +99,14 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       return row;
     });
 
-    // Create worksheet with all form fields
+    // Create worksheet
     const worksheet = XLSX.utils.json_to_sheet(excelData);
 
-    // Set column order to match headers
-    worksheet['!cols'] = formFieldHeaders.map(() => ({ width: 15 })); // Set reasonable column widths
+    // Set column widths
+    const columnWidths = headers.map(header => ({
+      width: Math.max(header.length, 15)
+    }));
+    worksheet['!cols'] = columnWidths;
 
     // Create workbook
     const workbook = XLSX.utils.book_new();
@@ -107,5 +130,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   } catch (error) {
     console.error(`Error exporting responses for form ${formId}:`, error);
     return NextResponse.json({ error: 'Internal server error during export' }, { status: 500 });
+
+
   }
-}
+}  

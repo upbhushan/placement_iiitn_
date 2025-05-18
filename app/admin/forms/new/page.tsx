@@ -1,29 +1,23 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { FormBuilder } from '@/components/admin/forms/FormBuilder'; // We'll create this next
+import { FormBuilder } from '@/components/admin/forms/FormBuilder';
 import { useFormBuilderStore } from '@/lib/store/formBuilderStore';
-import { Button } from '@/components/ui/button'; // Assuming Shadcn UI
-import { useRouter } from 'next/navigation'; // Use next/navigation for App Router
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { toast } from 'sonner'; // Assuming you use 'sonner' for toasts
-
-const FIELD_TYPE_OPTIONS = [
-    { value: "text", label: "Text" },
-    { value: "email", label: "Email" },
-    { value: "number", label: "Number" },
-    { value: "date", label: "Date" },
-    { value: "file", label: "File" },
-    { value: "select", label: "Select (Dropdown)" },
-    // Do NOT include an option with value: "" for placeholder purposes here
-];
+import { toast } from 'sonner';
+import { Save } from 'lucide-react';
 
 export default function NewFormPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
 
     // Zustand store values
-    const { formName, formDescription, fields, colorScheme, published, resetFormBuilder } = useFormBuilderStore();
+    const {
+        formName, formDescription, fields, colorScheme,
+        published, currentTheme, resetFormBuilder
+    } = useFormBuilderStore();
 
     useEffect(() => {
         // Reset store when component mounts to ensure a fresh state for a new form
@@ -35,7 +29,7 @@ export default function NewFormPage() {
     }
 
     if (status === 'unauthenticated' || session?.user?.role !== 'admin') {
-        router.replace('/auth/signin'); // Or your admin login page
+        router.replace('/auth/signin');
         return null;
     }
 
@@ -52,10 +46,10 @@ export default function NewFormPage() {
         const formPayload = {
             name: formName,
             description: formDescription,
-            fields: fields.map(({ _id, ...field }) => ({ ...field, _id: undefined })), // Server will generate _ids for fields
+            fields: fields.map(({ _id, ...field }) => ({ ...field, _id: undefined })),
             colorScheme,
             published,
-            // sharedWith, // If implementing
+            currentTheme,
         };
 
         try {
@@ -75,11 +69,10 @@ export default function NewFormPage() {
             }
 
             toast.success('Form created successfully!');
-            resetFormBuilder(); // Clear the form builder for a new form
-            router.push('/admin/forms'); // Navigate to the form list page
+            resetFormBuilder();
+            router.push('/admin/forms');
         } catch (error) {
             console.error('Failed to save form:', error);
-            // Toast error is already handled above for response.ok false
         }
     };
 
@@ -87,7 +80,12 @@ export default function NewFormPage() {
         <div className="container mx-auto py-8 px-4 md:px-0">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-gray-800">Create New Form</h1>
-                <Button onClick={handleSaveForm} size="lg">
+                <Button
+                    onClick={handleSaveForm}
+                    size="lg"
+                    className="flex items-center gap-2"
+                >
+                    <Save size={18} />
                     Save Form
                 </Button>
             </div>

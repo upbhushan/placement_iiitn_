@@ -571,3 +571,18 @@ select:focus-visible,
   outline: none !important;
   border-color: var(--ring, rgba(99, 102, 241, 0.8)) !important;
 }
+
+/* Add these CSS rules */
+
+/* Make form inputs expand to full width by default */
+.form-container input,
+.form-container textarea,
+.form-container select {
+  width: 100%;
+}
+
+/* Ensure cards can expand beyond their default max-width */
+.card-expanded {
+  max-width: none !important;
+  width: 100% !important;
+}
