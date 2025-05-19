@@ -292,7 +292,7 @@ export function EditStudentModal({ studentId, isOpen, onClose, onStudentUpdated 
                       <SelectItem value="ECE">ECE (Electronics)</SelectItem>
                       <SelectItem value="DSA">DSA (Data Science)</SelectItem>
                       <SelectItem value="AIML">AIML (AI & Machine Learning)</SelectItem>
-                      <SelectItem value="HCIG">HCIG (Human Computer Interaction)</SelectItem>
+                      <SelectItem value="HCIGT">HCIGT (Human Computer Interaction)</SelectItem>
                       <SelectItem value="IOT">IOT (Internet of Things)</SelectItem>
                     </SelectContent>
                   </Select>
