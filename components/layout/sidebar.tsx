@@ -174,21 +174,21 @@ export function Sidebar({ className }: SidebarProps) {
         {
             section: 'Student Management',
             items: [
-                {
-                    title: 'All Students',
-                    href: '/admin/students',
-                    icon: <Users className="h-5 w-5" />
-                },
+                // {
+                //     title: 'All Students',
+                //     href: '/admin/students',
+                //     icon: <Users className="h-5 w-5" />
+                // },
                 {
                     title: 'Bulk Upload',
                     href: '/admin/bulk-upload',
                     icon: <Upload className="h-5 w-5" />
                 },
-                {
-                    title: 'Placement Records',
-                    href: '/admin/placements',
-                    icon: <Building className="h-5 w-5" />
-                }
+                // {
+                //     title: 'Placement Records',
+                //     href: '/admin/placements',
+                //     icon: <Building className="h-5 w-5" />
+                // }
             ]
         },
         {
@@ -199,16 +199,16 @@ export function Sidebar({ className }: SidebarProps) {
                     href: '/admin/forms',
                     icon: <FileText className="h-5 w-5" />
                 },
-                {
-                    title: 'Form Responses',
-                    href: '/admin/forms/responses',
-                    icon: <FileSpreadsheet className="h-5 w-5" />
-                },
-                {
-                    title: 'Announcements',
-                    href: '/admin/announcements',
-                    icon: <BellRing className="h-5 w-5" />
-                }
+                // {
+                //     title: 'Form Responses',
+                //     href: '/admin/forms/responses',
+                //     icon: <FileSpreadsheet className="h-5 w-5" />
+                // },
+                // {
+                //     title: 'Announcements',
+                //     href: '/admin/announcements',
+                //     icon: <BellRing className="h-5 w-5" />
+                // }
             ]
         },
         {
@@ -247,11 +247,11 @@ export function Sidebar({ className }: SidebarProps) {
                     href: '/student/forum',
                     icon: <MessageSquare className="h-5 w-5" />
                 },
-                {
-                    title: 'Opportunities',
-                    href: '/opportunities',
-                    icon: <Briefcase className="h-5 w-5" />
-                },
+                // {
+                //     title: 'Opportunities',
+                //     href: '/opportunities',
+                //     icon: <Briefcase className="h-5 w-5" />
+                // },
                 {
                     title: 'Forms',
                     href: '/student/dashboard',
