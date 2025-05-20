@@ -237,18 +237,3 @@ Ensure code adheres to ESLint and TypeScript standards. Test thoroughly before s
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## Learn More
-- [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and APIs.
-- [Learn Next.js](https://nextjs.org/learn) - Interactive Next.js tutorial.
-- [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) - Deploy your app with Vercel.
-- [Next.js GitHub](https://github.com/vercel/next.js) - Contribute or provide feedback.
-
-
-### Notes
-- The README is formatted in Markdown (`.md`) and includes all sections from the provided content, with improvements in clarity, formatting, and structure.
-- The `<xaiArtifact>` tag uses the same `artifact_id` (`ccbcaa19-762c-43e1-9453-c9a98e89ab6a`) as the previous README to indicate it's an updated version.
-- The content is concise yet comprehensive, covering all required details (features, tech stack, project structure, installation, environment variables, Excel formats, URLs/endpoints, test credentials, contributing, and learning resources).
-- The table for Excel file formats is properly formatted in Markdown for readability.
-- Code blocks and links are formatted correctly for GitHub rendering.
-
-Copy the content within the `<xaiArtifact>` tag (excluding the tag itself) and paste it into your GitHub `README.md` file. Let me know if you need further refinements or additional sections!
