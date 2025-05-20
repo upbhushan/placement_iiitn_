@@ -26,7 +26,7 @@ This is a web-based placement management portal developed for IIIT Nagpur to str
 - **Forum**: Discussion platform supporting topic creation, comments, and voting.
 - **File Uploads**: Cloudinary integration for uploading student photos and documents.
 - **Analytics**: Data-driven insights for placement statistics (admin and student views).
-- **Chatbot**: AI-powered chatbot for real-time user support.
+- **Chatbot**: AI-powered chatbot for real-time user support regarding placement policy.
 - **Responsive Design**: Built with Tailwind CSS and optimized with `next/font` (Geist font family).
 - **Excel Support**: Bulk upload student data via `.xlsx` or `.xls` files with predefined fields.
 
@@ -61,7 +61,6 @@ prashantsaxe-placement_iiitn_/
 ├── components/                 # Reusable React components
 │   ├── admin/                  # Admin-specific components (form builder, student table)
 │   ├── auth/                   # Login and password reset forms
-│   ├── chatbot/                # AI-powered chatbot component
 │   ├── dashboard/              # Dashboard UI components
 │   ├── forms/                  # Form rendering components
 │   ├── layout/                 # Layout components (navbar, sidebar, footer)
