@@ -1,5 +1,3 @@
-Below is the reformatted and improved README in Markdown language for the `prashantsaxe-placement_iiitn_` project, based on the provided content. I've enhanced the structure, improved readability, and ensured consistency while preserving all key details, including features, tech stack, project structure, installation instructions, environment variables, Excel file formats, URLs, API endpoints, test credentials, and contribution guidelines. The content is wrapped in an `<xaiArtifact>` tag with the same `artifact_id` as the previous README to indicate it's an updated version, as per the instructions.
-
 
 # Placement Portal - IIIT Nagpur
 
