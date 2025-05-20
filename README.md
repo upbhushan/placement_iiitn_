@@ -1,6 +1,4 @@
-Here’s the updated and improved `README.md` file based on your requirements, including test credentials and the integration of the chatbot for placement policy-related queries:
 
-```markdown
 # Placement Portal - IIIT Nagpur
 
 Welcome to the **Placement Portal** for IIIT Nagpur! This web-based application is designed to streamline placement activities for both students and administrators. It includes features like dynamic form creation, student profile management, forum discussions, file uploads, analytics, and an integrated **AI-powered chatbot** for answering placement policy-related queries.
@@ -279,15 +277,3 @@ Ensure code adheres to ESLint and TypeScript standards. Test thoroughly before s
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## Learn More
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Learn Next.js](https://nextjs.org/learn)
-- [Vercel Deployment](https://vercel.com/)
-- [Next.js GitHub](https://github.com/vercel/next.js)
-``` 
-
-This `README.md` is now more comprehensive and includes all the requested details, such as the chatbot feature, test credentials, and improved formatting. You can copy and paste this directly into your GitHub repository.
