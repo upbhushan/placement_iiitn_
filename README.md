@@ -49,6 +49,9 @@ Welcome to the **Placement Portal** for IIIT Nagpur! This web-based application 
 
 ---
 
+## Project FlowChart : 
+![image](https://github.com/user-attachments/assets/9af6a4d3-c728-4b70-b707-1f4ac9ac2ec2)
+
 ## Project Structure
 
 ```
