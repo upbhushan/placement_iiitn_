@@ -254,7 +254,7 @@ Use descriptive names (e.g., `student_data.xlsx`). Avoid special characters; use
 Use the following credentials for testing:
 
 #### Admin:
-- Email: `akashkarenight@gmail.com`
+- Email: `anuragk2204@gmail.com`
 - Password: `password123`
 
 #### Student:
